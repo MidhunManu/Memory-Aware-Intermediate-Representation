@@ -118,7 +118,7 @@ void codegen_generate(IrContext* ir_ctx, FILE* out) {
                 else if (inst->op == IR_OP_CMP_GE) setcc = "setge";
                 
                 fprintf(out, "    %s al\n", setcc);
-                fprintf(out, "    movzb rax, al\n");
+                fprintf(out, "    movzx rax, al\n");
                 store_operand(out, &inst->dest, "rax", &sym, temp_base_offset);
                 break;
             }
