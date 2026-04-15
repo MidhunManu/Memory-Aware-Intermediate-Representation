@@ -54,6 +54,5 @@ int main(int argc, char** argv) {
     printf("Compiled %s to out.asm successfully.\n", filepath);
 
     free(source);
-    // A production compiler would thoroughly free the AST and IR structures here.
     return 0;
 }
