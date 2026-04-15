@@ -4,29 +4,30 @@
 #include "ast.h"
 
 typedef enum {
-    IR_OP_CONST,    // t1 = const 5
-    IR_OP_ASSIGN,   // dest = src1
-    IR_OP_ADD,      // t3 = t1 + t2
+    IR_OP_CONST,
+    IR_OP_ASSIGN,
+    IR_OP_ADD,
     IR_OP_CMP_EQ,
     IR_OP_CMP_NE,
     IR_OP_CMP_LT,
     IR_OP_CMP_GT,
     IR_OP_CMP_LE,
     IR_OP_CMP_GE,
-    IR_OP_JMP,      // goto L1
-    IR_OP_JMP_IF_FALSE, // if !src1 goto L1
-    IR_OP_EXIT,     // exit src1
-    IR_OP_LABEL     // L1:
+    IR_OP_JMP,
+    IR_OP_JMP_IF_FALSE,
+    IR_OP_EXIT,
+    IR_OP_LABEL
 } IrOpcode;
 
 typedef enum {
-    ACCESS_SEQUENTIAL,
-    ACCESS_UNKNOWN
+    ACCESS_UNKNOWN,
+    ACCESS_SEQUENTIAL
 } AccessPattern;
 
 typedef enum {
-    REUSE_HIGH,
-    REUSE_LOW
+    REUSE_LOW,
+    REUSE_MEDIUM,
+    REUSE_HIGH
 } ReuseHint;
 
 typedef enum {
@@ -40,8 +41,8 @@ typedef enum {
 typedef struct {
     IrOperandType type;
     union {
-        int index_or_val;  // for temp t1 (index=1), const (val=5), or label L1 (index=1)
-        char var_name[64]; // for variables
+        int index_or_val;
+        char var_name[64];
     };
 } IrOperand;
 
@@ -51,10 +52,15 @@ typedef struct {
     IrOperand src1;
     IrOperand src2;
     
-    // Memory-aware extension
     AccessPattern access_pattern;
     ReuseHint reuse_hint;
+    int reuse_distance;
 } IrInstruction;
+
+typedef struct {
+    char name[64];
+    int last_used_inst;
+} MemoryAccess;
 
 typedef struct {
     IrInstruction* instrs;
@@ -62,9 +68,13 @@ typedef struct {
     int capacity;
     int next_temp;
     int next_label;
+    
+    MemoryAccess accesses[128];
+    int access_count;
 } IrContext;
 
 void ir_context_init(IrContext* ctx);
 void ir_generate(IrContext* ctx, AstNode* node);
+void ir_print(IrContext* ctx);
 
 #endif
