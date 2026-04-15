@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -g
+CFLAGS = -Wall -Wextra -std=c18 -g
 
 SRCS = lexer.c parser.c ir.c codegen.c main.c
 OBJS = $(SRCS:.c=.o)
